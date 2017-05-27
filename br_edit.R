@@ -40,7 +40,7 @@ library(xlsx)
 ui <- shinyUI(
   mainPanel(
     tabsetPanel(
-    tabPanel("dataFilter", fluidPage(
+    tabPanel("Data Filter", fluidPage(
   
   titlePanel("CSV Splitter"),
   
@@ -51,7 +51,7 @@ ui <- shinyUI(
       uiOutput("column_school"),
       uiOutput("column_class"),
       uiOutput("display"),
-	  uiOutput("test_date"),
+	    uiOutput("test_date"),
       uiOutput("column_test"),
       downloadButton("download")
     ),
@@ -61,9 +61,23 @@ ui <- shinyUI(
     )
   )
 )),
-tabPanel("Panel2")
-)
-)
+tabPanel("Statistics Reports",
+         fluidPage(
+           titlePanel("Statistics Reports"),
+           
+           sidebarLayout(
+             sidebarPanel(
+               downloadButton("download_test")
+             ),
+             
+             mainPanel(
+               h1("test Text")
+             )
+           )
+             )
+           )
+         )
+           )
 )
 
 #################
