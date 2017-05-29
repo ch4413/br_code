@@ -80,6 +80,9 @@ tabPanel("Statistics Reports",
                  )
                  ),
                  tabPanel("Statistics", fluidPage(
+                   uiOutput("column_school_s"),
+                   uiOutput("class_s"),
+                   uiOutput("test_s"),
                    h1("test")
                  )
                  )
@@ -111,6 +114,14 @@ server <- shinyServer(function(input, output) {
     }
   })
 
+  data_t2 <- reactive({
+    if (is.null(input$file)) {
+      return(data.frame( Values = "No data available"))
+    } else {
+      return(read_delim(inFile$datapath, delim = ";"))
+    }
+  })
+
   output$data_t2 <- renderDataTable({
 
     inFile <- input$file_2
@@ -130,6 +141,31 @@ server <- shinyServer(function(input, output) {
       selectInput("school", "Select a School", unique(as.character(data()[["school2"]])))
     } else {
       selectInput("school", "Select a School", c("ALL", unique(as.character(data()[["school2"]]))))
+    }
+  })
+
+  ### Stats school selection
+  output$column_school_s <- renderUI({
+    if (is.null(input$file_2)) {
+      selectInput("school_s", "Select a School", "testValue")
+    } else {
+      selectInput("school_s", "Select a School", c("ALL", "testValue"))
+    }
+  })
+  ### Stats school selection
+  output$class_s <- renderUI({
+    if (is.null(input$file_2)) {
+      selectInput("class_s", "Select a class", "testValue")
+    } else {
+      selectInput("school_s", "Select a class", c("ALL", "testValue"))
+    }
+  })
+  ### Stats school selection
+  output$test_s <- renderUI({
+    if (is.null(input$file_2)) {
+      selectInput("post_title.1_s", "Select a test", "testValue")
+    } else {
+      selectInput("post_title.1_s", "Select a test", c("ALL", "testValue"))
     }
   })
 
