@@ -37,10 +37,13 @@ data_type <- data %>%
 filter_d <- test_f(data_type, testn = "Block 7 Topic 1:")
 # Split into two data sets
 
-# s1 <- test_f(data_type, testn = "Block 7 Topic 1: Pre Test")
-# s2 <- test_f(data_type, testn = "Block 7 Topic 1: Post Test")
+filt_pre <- filter_d %>%
+  filter(type == "Pre Test")
 
-d <- inner_join(s1, s2, by = "user_id")
+filt_post <- filter_d %>%
+  filter(type == "Post Test")
+
+d <- inner_join(filt_pre, filt_post, by = c("user_id", "school", "class", "test"))
 e <- d[!duplicated(d), ]
 
 outputTs <- function(group1, group2) {
@@ -51,7 +54,7 @@ outputTs <- function(group1, group2) {
 
 }
 
-outputTs(s1, s2)
+outputTs(e$percentage.x, e$percentage.y)
 
 # Cohen's D (effect size) for all pupils and sub groups in group.
 # install.packages("lsr")

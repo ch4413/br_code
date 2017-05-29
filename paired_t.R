@@ -155,4 +155,65 @@ run_t_tests <- function(filepath,
            filepath = paste0("ttest_", as.integer(lubridate::now()), ".csv"))
 }
 
+setwd("/Users/chughes/Desktop/br_code/br_code/")
 run_t_tests(file.choose(), filters = list(school = "All", class = "All", testn = "Block 7 Topic 2:"))
+
+### Measuring Progress
+
+progressMeasure <- function(group1, group2, ceiling, threshold) {
+
+  diffP <- group2 - group1
+  labels <- c("Regressed", "No Change", "Progressed")
+  RNOP <- cut(diffP, breaks = c(-Inf, -1e-5, 1e-5, Inf),
+              labels = labels)
+  tibble(Value =  labels, Count = summary(RNOP))
+
+}
+
+# 1 Load in data
+dat_a <- read_data(file.choose())
+# 2 Add columns for test and test_type
+data_ac <- add_test_cols(dat_a)
+# 3 Filter data as appropriate
+data_acf <- filt_sct(data_ac, testn = "Block 8 Topic 2:")
+# 4 split data into pre, post, join and remove duplicates
+data_acfp <- get_pairs(data = data_acf)
+# 5 Compare progess as Regress, No change or Progress
+
+prog_measure <- function(group1, group2, ceiling = 100, threshold = 0.05) {
+
+  diffP <- group2 - group1
+  labels <- c("Regressed", "No Change", "Progressed")
+  RNOP <- cut(diffP, breaks = c(-Inf, -1e-5, 1e-5, Inf),
+              labels = labels)
+  tibble(Value =  labels, Count = summary(RNOP))
+
+}
+
+data_prog <- prog_measure(group1 = data_acfp$percentage.x, group2 = data_acfp$percentage.y)
+
+# 6 Save in .csv file
+
+save_csv(data = data_prog, filepath = paste0("prog_", as.integer(lubridate::now()), ".csv"))
+
+### Progess wrapped up
+
+progress_csv <- function(filepath = file.choose(),
+                         filters = list(school = "All", class = "All", testn = "All:")) {
+
+  settings <- tibble(Metric = names(unlist(filters)), Value = unlist(filters))
+  names(settings) <- c("Value", "Count")
+  dat_a <- read_data(file.choose())
+
+  data_ac <- add_test_cols(dat_a)
+  data_acf <- filt_sct(data_ac,
+                       sch = filters$school, classn = filters$class, testn = filters$testn)
+  data_acfp <- get_pairs(data = data_acf)
+  data_prog <- prog_measure(group1 = data_acfp$percentage.x, group2 = data_acfp$percentage.y)
+
+  save_csv(data = rbind(data_prog, settings),
+           filepath = paste0("prog_", as.integer(lubridate::now()), ".csv"))
+
+}
+setwd("/Users/chughes/Desktop/br_code/br_code/")
+progress_csv(file.choose(), filters = list(school = "All", class = "All", testn = "Block 8 Topic 2:"))
