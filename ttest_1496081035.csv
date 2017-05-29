@@ -1,0 +1,15 @@
+Metric,Value
+statistic.t,-34.5377249114579
+parameter.df,1397
+p.value,1.75427936183586e-189
+conf.int1,-13.8967386485557
+conf.int2,-12.4029752284114
+estimate.mean of the differences,-13.1498569384835
+null.value.difference in means,0
+alternative,two.sided
+method,Paired t-test
+data.name,group1 and group2
+Cohen's d,0.816198876984789
+school,All
+class,All
+testn,Block 7 Topic 2:

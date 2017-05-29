@@ -11,6 +11,7 @@
 #' outputTs(sleep$extra[1:10], sleep$extra[11:20])
 #'
 
+
 test_f <- function(d, sch = "All", classn = "All",testn = "All") {
   if (any(sch != "All")) {
     d <- d %>%
@@ -22,18 +23,22 @@ test_f <- function(d, sch = "All", classn = "All",testn = "All") {
   }
   if (any(testn != "All")) {
     d <- d %>%
-      filter(post_title.1 %in% testn)
+      filter(test %in% testn)
   }
   d %>%
-    select(user_id, percentage)
+    select(user_id, school, class, test, type, percentage)
 }
 
-v <- test_f(data, sch = "All")
-v <- test_f(data, sch = "Island School (HKN)")
-v <- test_f(data, sch = c("Island School (HKN)", "Droitwich"), testn = "Block 7 Topic 1: Pre Test")
+data_type <- data %>%
+  mutate(type = stringr::str_extract(post_title.1, ": .*"),
+         test = stringr::str_extract(post_title.1, ".*:")) %>%
+  mutate(type = stringr::str_extract(type, "[A-Z].*"))
 
-s1 <- test_f(data, testn = "Block 7 Topic 1: Pre Test")
-s2 <- test_f(data, testn = "Block 7 Topic 1: Post Test")
+filter_d <- test_f(data_type, testn = "Block 7 Topic 1:")
+# Split into two data sets
+
+# s1 <- test_f(data_type, testn = "Block 7 Topic 1: Pre Test")
+# s2 <- test_f(data_type, testn = "Block 7 Topic 1: Post Test")
 
 d <- inner_join(s1, s2, by = "user_id")
 e <- d[!duplicated(d), ]
@@ -106,8 +111,8 @@ data_input %>%
 vv <- mean_tests(data)
 
 test <- data %>%
-  mutate(Type = stringr::str_extract(post_title.1, ": .*")) %>%
-  mutate(Type = stringr::str_extract(Type, "[A-Z].*"))
+  mutate(type = stringr::str_extract(post_title.1, ": .*")) %>%
+  mutate(type = stringr::str_extract(type, "[A-Z].*"))
 
 filt_pp <- test %>%
   select(school, class, name, Type, post_title.1, acc_gender, percentage) %>%
