@@ -19,4 +19,4 @@ mean_group <- function(df, grp.var1 = "school", grp.var2 = "school", grp.var3 = 
     summarise_(total = ~n(), .dots = dots)
 }
 
-mean_group(data)
+mean_group(data_ac, grp.var1 = "school", grp.var2= "class")

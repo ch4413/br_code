@@ -217,3 +217,54 @@ progress_csv <- function(filepath = file.choose(),
 }
 setwd("/Users/chughes/Desktop/br_code/br_code/")
 progress_csv(file.choose(), filters = list(school = "All", class = "All", testn = "Block 8 Topic 2:"))
+
+### Means by grouping and count
+
+# 1 Load in data
+dat_a <- read_data(file.choose())
+# 2 Add columns for test and test_type
+data_ac <- add_test_cols(dat_a)
+
+# 3 Group data and calculate mean and n
+
+mean_group <- function(tibble1, grp.var1 = "school", grp.var2 = "school", grp.var3 = "school") {
+
+  dots <- list(~mean(percentage))
+
+  tibble1 %>%
+    group_by_(grp.var1, grp.var2,grp.var3) %>%
+    summarise_(total = ~n(), .dots = dots)
+}
+
+grouped_means <- mean_group(data_ac, grp.var1 = "school", grp.var2= "acc_gender")
+
+# 4 name and save
+
+unique_name_string <- function(val1, val2, val3) {
+
+  unq <- unique(c(val1, val2, val3))
+  paste(unq, collapse = ".")
+
+}
+
+groups <- unique_name_string("school", "acc_gender", "school")
+setwd("/Users/chughes/Desktop/br_code/br_code/")
+save_csv(data = grouped_means, filepath = paste0("mean_", groups, ".csv"))
+
+### Mean groups rolled together
+
+run_mean_groups <- function(filepath = file.choose(),
+                            grp.var1, grp.var2, grp.var3) {
+
+  dat_a <- read_data(filepath)
+
+  data_ac <- add_test_cols(dat_a)
+  grouped_means <- mean_group(data_ac, grp.var1 = grp.var1,
+                              grp.var2 = grp.var2, grp.var3 = grp.var3)
+
+  groups <- unique_name_string(grp.var1, grp.var2, grp.var3)
+  save_csv(data = grouped_means, filepath = paste0("mean_", groups, ".csv"))
+}
+
+setwd("/Users/chughes/Desktop/")
+run_mean_groups(filepath = file.choose(), grp.var1 = "test", grp.var2 = "acc_gender", grp.var3 = "acc_gender")
