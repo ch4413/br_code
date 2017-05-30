@@ -3,7 +3,7 @@ library(readr)
 
 server <- function(input, output) {
 
-  getData <- reactive({
+  data <- reactive({
 
     inFile <- input$file1
 
@@ -12,20 +12,27 @@ server <- function(input, output) {
 
     dat_a <- read_data(inFile$datapath)
     data_ac <- add_test_cols(dat_a)
-    data_acf <- filt_sct(data_ac, sch = input$school)
-    data_acf
+    data_ac
+  })
 
+  getData <- reactive({
+
+    if (is.null(input$file1))
+      return(dplyr::tibble(Data = "No data Available"))
+
+    data_acf <- filt_sct(data(), sch = input$school)
+    data_acf
   })
 
   output$column_school <- renderUI({
     if (is.null(input$file)) {
       selectizeInput("school",
                      "Select a School",
-                     c("All", unique(as.character(getData()[["school"]]))), selected = input$school, multiple =)
+                     c("All", unique(as.character(data()[["school"]]))), selected = input$school, multiple = TRUE)
     } else {
       selectizeInput("school",
                      "Select a School",
-                     c("All", unique(as.character(getData()[["school"]]))), selected = input$school, multiple = TRUE)
+                     c("All", unique(as.character(data()[["school"]]))), selected = input$school, multiple = TRUE)
     }
   })
 
