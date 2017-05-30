@@ -9,6 +9,7 @@ ui <- fluidPage(
                            '.csv')),
         tags$hr(),
         uiOutput("column_school"),
+        uiOutput("column_class"),
         downloadButton('downloadData', 'Download')
       ),
       mainPanel(

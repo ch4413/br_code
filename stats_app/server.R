@@ -12,26 +12,31 @@ server <- function(input, output) {
 
     dat_a <- read_data(inFile$datapath)
     data_ac <- add_test_cols(dat_a)
-    data_ac
+    data_acf <- filt_sct(data_ac, sch = input$school)
+    data_acf
 
   })
 
   output$column_school <- renderUI({
     if (is.null(input$file)) {
       selectizeInput("school",
-                     "Select a School", unique(as.character(getData()[["school"]])), multiple = TRUE)
+                     "Select a School",
+                     c("All", unique(as.character(getData()[["school"]]))), selected = input$school, multiple =)
     } else {
       selectizeInput("school",
-                     "Select a School", c("ALL", unique(as.character(getData()[["school"]]))), multipl = TRUE)
+                     "Select a School",
+                     c("All", unique(as.character(getData()[["school"]]))), selected = input$school, multiple = TRUE)
     }
   })
 
 
-  output$contents <- shiny::renderDataTable(
+
+  output$contents <- shiny::renderDataTable({
 
     getData()
 
-  )
+
+  })
 
   output$downloadData <- downloadHandler(
 
