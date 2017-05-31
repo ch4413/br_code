@@ -89,7 +89,6 @@ t_results <- paired_t(data_acfp$percentage.x, data_acfp$percentage.y)
 
 # Export data frame along with filters that were applied
 
-
 ### Just the commands
 
 # 1 Load in data
