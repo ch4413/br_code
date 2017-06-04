@@ -17,7 +17,8 @@ server <- function(input, output) {
     data_ac
   })
   
-
+  
+  
   getData <- reactive({
 
     if (is.null(input$file1))
@@ -35,7 +36,7 @@ server <- function(input, output) {
     if (is.null(input$file1))
       return(dplyr::tibble(Data = "No data Available"))
     
-    data_acf <- filt_sct(data(), sch = input$school, classn = input$class, testn = input$test)
+    data_acf <- filt_sct(data(), sch = input$schoolpg, classn = input$classpg, testn = input$testpg)
     data_acfp <- get_pairs(data = data_acf)
     data_prog <- prog_measure(group1 = data_acfp$percentage.x, group2 = data_acfp$percentage.y)
     data_prog
@@ -46,8 +47,47 @@ server <- function(input, output) {
     if (is.null(input$file1))
       return(dplyr::tibble(Data = "No data Available"))
     
-    grouped_means <- mean_group(data(), grp.var1 = "school", grp.var2= "acc_gender")
+    grouped_means <- mean_group(data(),
+                                grp.var1 = input$group1,
+                                grp.var2= input$group2,
+                                grp.var3 = input$group3)
     
+  })
+  
+  output$grp.var1 <- renderUI({
+    if (is.null(input$file)) {
+      selectInput("group1",
+                     "Select a value to group by",
+                    names(data()))
+    } else {
+      selectInput("group1",
+                     "Select a value to group by",
+                     names(data()))
+    }
+  })
+  
+  output$grp.var2 <- renderUI({
+    if (is.null(input$file)) {
+      selectInput("group2",
+                  "Select a value to group by",
+                  names(data()))
+    } else {
+      selectInput("group2",
+                  "Select a value to group by",
+                  names(data()))
+    }
+  })
+  
+  output$grp.var3 <- renderUI({
+    if (is.null(input$file)) {
+      selectInput("group3",
+                  "Select a value to group by",
+                  names(data()))
+    } else {
+      selectInput("group3",
+                  "Select a value to group by",
+                  names(data()))
+    }
   })
 
   output$column_school <- renderUI({
@@ -87,6 +127,46 @@ server <- function(input, output) {
                      c("All", unique(as.character(data()[["test"]]))), selected = input$test, multiple = TRUE)
     }
   })
+  
+  ########## Progress filters ###############
+  
+  output$prog_school <- renderUI({
+    if (is.null(input$file)) {
+      selectizeInput("schoolpg",
+                     "Select a School",
+                     c("All", unique(as.character(data()[["school"]]))), selected = input$schoolpg, multiple = TRUE)
+    } else {
+      selectizeInput("schoolpg",
+                     "Select a School",
+                     c("All", unique(as.character(data()[["school"]]))), selected = input$schoolpg, multiple = TRUE)
+    }
+  })
+  
+  output$prog_class <- renderUI({
+    if (any(input$schoolpg %in% "All")) {
+      selectizeInput("classpg",
+                     "Select a Class",
+                     c("All", unique(as.character(data()[["class"]]))), multiple = TRUE)
+    }
+    else {
+      selectizeInput("classpg",
+                     "Select a Class",
+                     c("All", unique(as.character(data()[data()[["school"]] %in% input$schoolpg, ][["class"]]))),
+                     multiple = TRUE)
+    }
+  })
+  
+  output$prog_test <- renderUI({
+    if (is.null(input$file)) {
+      selectizeInput("testpg",
+                     "Select a test",
+                     c("All", unique(as.character(data()[["test"]]))), selected = input$test, multiple = TRUE)
+    } else {
+      selectizeInput("testpg",
+                     "Select a test",
+                     c("All", unique(as.character(data()[["test"]]))), selected = input$test, multiple = TRUE)
+    }
+  })
 
   output$progd <- shiny::renderDataTable({
 
@@ -119,9 +199,45 @@ server <- function(input, output) {
     },
 
     content = function(file) {
+      metrics <- tibble(Metric = c("School", "Class", "Test"),
+                        Value = c(
+                          input_return(input$school),
+                          input_return(input$class),
+                          input_return(input$test)
+                        ))
 
-      write.csv(getData(), file)
-
+      write.csv(rbind(getData(), metrics), file)
+      })
+  
+  output$downloadProgress <- downloadHandler(
+    
+    filename = function() {
+      paste("data_progress-", Sys.Date(), ".csv", sep="")
+    },
+    
+    
+    content = function(file) {
+      metrics <- tibble(Value = c("School", "Class", "Test"),
+                        Count = c(
+                          input_return(input$schoolpg),
+                          input_return(input$classpg),
+                          input_return(input$testpg)
+                        ))
+      
+      write.csv(rbind(progressData(), metrics), file)
+      
+    })
+  
+  output$downloadGroup <- downloadHandler(
+    
+    filename = function() {
+      paste("data_means-", Sys.Date(), ".csv", sep="")
+    },
+    
+    content = function(file) {
+      
+      write.csv(meansData(), file)
+      
     })
 
   # 1
@@ -207,6 +323,15 @@ server <- function(input, output) {
     tibble1 %>%
       group_by_(grp.var1, grp.var2,grp.var3) %>%
       summarise_(total = ~n(), .dots = dots)
+  }
+  
+  input_return <- function(input) {
+    if(is.null(input)) {
+      "All"
+    }
+    else {
+      as.character(paste0(input, collapse = ", "))
+    }
   }
 
 }
