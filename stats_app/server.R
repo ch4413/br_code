@@ -49,8 +49,11 @@ server <- function(input, output) {
     
     grouped_means <- mean_group(data(),
                                 grp.var1 = input$group1,
-                                grp.var2= input$group2,
-                                grp.var3 = input$group3)
+                                grp.var2 = input$group2,
+                                grp.var3 = input$group3,
+                                grp.var4 = input$group4,
+                                grp.var5 = input$group5
+                                )
     
   })
   
@@ -85,6 +88,30 @@ server <- function(input, output) {
                   names(data()))
     } else {
       selectInput("group3",
+                  "Select a value to group by",
+                  names(data()))
+    }
+  })
+  
+  output$grp.var4 <- renderUI({
+    if (is.null(input$file)) {
+      selectInput("group4",
+                  "Select a value to group by",
+                  names(data()))
+    } else {
+      selectInput("group4",
+                  "Select a value to group by",
+                  names(data()))
+    }
+  })
+  
+  output$grp.var5 <- renderUI({
+    if (is.null(input$file)) {
+      selectInput("group5",
+                  "Select a value to group by",
+                  names(data()))
+    } else {
+      selectInput("group5",
                   "Select a value to group by",
                   names(data()))
     }
@@ -316,7 +343,10 @@ server <- function(input, output) {
     
   }
   
-  mean_group <- function(tibble1, grp.var1 = "school", grp.var2 = "school", grp.var3 = "school") {
+  mean_group <- function(tibble1,
+                         grp.var1 = "school", grp.var2 = "school",
+                         grp.var3 = "school", grp.var4 = "school",
+                         grp.var5 = "school") {
     
     dots <- list(~mean(percentage))
     

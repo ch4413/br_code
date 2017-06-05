@@ -40,6 +40,8 @@ tabPanel("Mean Score Report", fluidPage(
       uiOutput("grp.var1"),
       uiOutput("grp.var2"),
       uiOutput("grp.var3"),
+      uiOutput("grp.var4"),
+      uiOutput("grp.var5"),
       downloadButton('downloadGroup', 'Download')
     ),
     mainPanel(

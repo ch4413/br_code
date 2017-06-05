@@ -3,7 +3,7 @@ Type: Package
 Title: Functions used in Bedrock analysis and application
 Version: 0.1.0
 Depends:  R (>= 3.0.0)
-Imports: readr, dplyr, stringr, stats
+Imports: readr, dplyr, stringr, stats, lsr
 Author: Chris Hughes
 Maintainer: Chris Hughes <christopher.hughes@bath.edu>
 Description: Functions used in Bedrock analysis and shiny application
