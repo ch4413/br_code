@@ -26,8 +26,7 @@ server <- function(input, output) {
 
     data_acf <- filt_sct(data(), sch = input$school, classn = input$class, testn = input$test)
     data_acfp <- get_pairs(data = data_acf)
-    t_results <- paired_t(data_acfp$percentage.x, data_acfp$percentage.y)
-    tdresults <- combTestStats(data_acfp$percentage.x, data_acfp$percentage.y)
+    tdresults <- combTestStats(data_acfp$percentage.y, data_acfp$percentage.x)
     tdresults
   })
   
