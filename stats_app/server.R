@@ -54,18 +54,18 @@ server <- function(input, output) {
 
     paired <- get_pairs(data())
 
-    d1 <- paired[, 1:28]
-    d2 <- cbind(paired[,29:dim(paired)[2]], paired[, c("user_id", "school", "class", "test")])
+    names <- data() %>%
+      dplyr::select(user_id, school, class, test, everything()) %>%
+      names()
+
+    d1 <- paired[, 1:length(names)]
+    d2 <- cbind(paired[,(length(names) + 1):dim(paired)[2]], paired[, c("user_id", "school", "class", "test")])
 
     d1 <- d1 %>%
       dplyr::select(user_id, school, class, test, everything())
 
     d2 <- d2 %>%
       dplyr::select(user_id, school, class, test, everything())
-
-    names <- data() %>%
-      dplyr::select(user_id, school, class, test, everything()) %>%
-      names()
 
     names(d1) <- names
     names(d2) <- names
