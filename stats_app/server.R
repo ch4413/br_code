@@ -376,7 +376,7 @@ server <- function(input, output) {
     dots <- list(~mean(percentage))
 
     tibble1 %>%
-      group_by_(grp.var1, grp.var2,grp.var3) %>%
+      group_by_(grp.var1, grp.var2,grp.var3, grp.var4, grp.var5) %>%
       summarise_(total = ~n(), .dots = dots)
   }
 
